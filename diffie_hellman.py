@@ -112,4 +112,5 @@ def mitm_key_fixing(q: int, alpha=None) -> None:
 if __name__ == "__main__":
     key_exchange(37, 5)
     key_exchange(Q, ALPHA)
+    mitm_key_fixing(Q)
     mitm_key_fixing(Q, Q)
