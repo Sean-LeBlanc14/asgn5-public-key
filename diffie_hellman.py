@@ -77,6 +77,39 @@ def key_exchange(q: int, alpha: int) -> None:
     print(f"Alice's received message: {decrypt(k_a, iv, c1)}")
 
 
+def mitm_key_fixing(q: int, alpha=None) -> None:
+    """Key exchange with Mallory replacing values with q or tampering with alpha"""
+    x_a = random.randint(1, q - 2)
+    x_b = random.randint(1, q - 2)
+
+    if alpha:
+        y_a = pow(alpha, x_a, q)
+        y_b = pow(alpha, x_b, q)
+        s_a = pow(y_b, x_a, q)
+        s_b = pow(y_a, x_b, q)
+    else:
+        s_a = pow(q, x_a, q)
+        s_b = pow(q, x_b, q)
+
+    k_a = derive_key(s_a)
+    k_b = derive_key(s_b)
+
+    iv = get_random_bytes(16)
+
+    c0 = encrypt(k_a, iv, "Hi Bob!")
+    c1 = encrypt(k_b, iv, "Hi Alice!")
+
+    s_mallory = 0
+    k_mallory = derive_key(s_mallory)
+
+    print(f"Alice's s: {s_a}")
+    print(f"Bob's s: {s_b}")
+    print(f"Mallory's s: {s_mallory}")
+    print(f"Mallory decrypting c0: {decrypt(k_mallory, iv, c0)}")
+    print(f"Mallory decrypting c1: {decrypt(k_mallory, iv, c1)}")
+
+
 if __name__ == "__main__":
     key_exchange(37, 5)
     key_exchange(Q, ALPHA)
+    mitm_key_fixing(Q, Q)
